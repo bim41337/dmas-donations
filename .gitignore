@@ -1,2 +1,4 @@
 .idea
 node_modules
+app/.dropbox
+app/desktop.ini
