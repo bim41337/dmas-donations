@@ -43,7 +43,7 @@ suite('Users API tests', function () {
 
     const oneUserUrl = url + '/' + users[0]._id;
     res = request('DELETE', oneUserUrl);
-    assert.isEmpty(JSON.parse(res.getBody('utf8'))); // TODO json input falsch
+    assert.isEmpty(res.body);
   });
 
   test('Delete all users', function () {
