@@ -7,15 +7,6 @@ let server = new Hapi.Server();
 
 server.connection({ port: process.env.PORT || 4000 });
 
-const initUser = {
-    admin: {
-      email: 'admin',
-      firstName: 'Initial',
-      lastName: 'Administrator',
-      password: '1234',
-    },
-  };
-
 server.register([require('inert'), require('vision'), require('hapi-auth-cookie')], err => {
 
   if (err) {
@@ -47,6 +38,7 @@ server.register([require('inert'), require('vision'), require('hapi-auth-cookie'
   });
 
   server.route(require('./routes'));
+  server.route(require('./routesapi'));
   server.start((err) => {
     if (err) {
       throw err;
