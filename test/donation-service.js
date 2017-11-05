@@ -5,10 +5,6 @@ const localhostBaseUrl = 'http://localhost:4000';
 
 class DonationService {
 
-  constructor() {
-    this.httpService = new SyncHttpService(localhostBaseUrl);
-  }
-
   constructor(baseUrl) {
     this.httpService = new SyncHttpService(baseUrl);
   }
