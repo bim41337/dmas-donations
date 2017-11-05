@@ -12,7 +12,7 @@ suite('Candidate API tests', function () {
   let newCandidate = fixtures.newCandidate;
 
   const baseUrl = HEROKU_MODE ? fixtures.donationServiceHerokuUrl
-      : DonationService.localhostBaseUrl;
+      : fixtures.donationServiceLocalhostUrl;
   const donationService = new DonationService(baseUrl);
 
   beforeEach(function () {

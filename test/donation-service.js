@@ -1,7 +1,6 @@
 'use strict';
 
 const SyncHttpService = require('./sync-http-service');
-const localhostBaseUrl = 'http://localhost:4000';
 
 class DonationService {
 
@@ -51,5 +50,4 @@ class DonationService {
 
 }
 
-exports.service = DonationService;
-exports.localhostBaseUrl = localhostBaseUrl;
+module.exports = DonationService;
