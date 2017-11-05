@@ -23,13 +23,13 @@ exports.findOne = {
 
   handler: function (request, reply) {
     Candidate.findOne({ _id: request.params.id }).then(candidate => {
-      if (candidate === null) {
-        reply(Boom.notFound('id not found'));
-      } else {
+      if (candidate != null) {
         reply(candidate);
       }
+
+      reply(Boom.notFound('id not found'));
     }).catch(err => {
-      reply(Boom.badImplementation('findOne api endpoint not working'));
+      reply(Boom.notFound('id not found'));
     });
   },
 

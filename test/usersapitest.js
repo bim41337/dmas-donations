@@ -1,58 +1,76 @@
 'use strict';
 
 const assert = require('chai').assert;
-var request = require('sync-request');
+const DonationService = require('./donation-service');
+const fixtures = require('./fixtures.json');
+const _ = require('lodash');
 
-const url = 'http://localhost:4000/api/users';
+suite('User API tests', function () {
 
-suite('Users API tests', function () {
+  let users = fixtures.users;
+  let newUser = fixtures.newUser;
 
-  test('get users', function () {
-    var res = request('GET', url);
-    const users = JSON.parse(res.getBody('utf8'));
+  const donationService = new DonationService('http://localhost:4000');
 
-    assert.equal(4, users.length);
+  beforeEach(function () {
+    donationService.deleteAllUsers();
+  });
 
-    assert.equal(users[0].firstName, 'Initial');
-    assert.equal(users[1].firstName, 'Homer');
-    assert.equal(users[2].firstName, 'Marge');
-    assert.equal(users[3].firstName, 'Bart');
-
+  afterEach(function () {
+    donationService.deleteAllUsers();
   });
 
   test('create a user', function () {
-
-    const newUser = {
-      firstName: 'James',
-      lastName: 'Hardfield',
-      email: 'james@met.ca',
-    };
-
-    const res = request('POST', url, { json: newUser });
-    const returnedUser = JSON.parse(res.getBody('utf8'));
-
-    assert.equal(returnedUser.firstName, 'James');
-    assert.equal(returnedUser.lastName, 'Hardfield');
-    assert.equal(returnedUser.email, 'james@met.ca');
-
+    const returnedUser = donationService.createUser(newUser);
+    assert(_.some([returnedUser], newUser),
+        'returnedUser must be a superset of newUser');
+    assert.isDefined(returnedUser._id);
   });
 
-  test('Delete one user', function () {
-    let res = request('GET', url);
-    const users = JSON.parse(res.getBody('utf8'));
-
-    const oneUserUrl = url + '/' + users[0]._id;
-    res = request('DELETE', oneUserUrl);
-    assert.isEmpty(res.body);
+  test('get user', function () {
+    const u1 = donationService.createUser(newUser);
+    const u2 = donationService.getUser(u1._id);
+    assert.deepEqual(u1, u2);
   });
 
-  test('Delete all users', function () {
-    const response = request('DELETE', url);
-    assert.equal(response.statusCode, 204);
+  test('get invalid user', function () {
+    const u1 = donationService.getUser('1234');
+    assert.isNull(u1);
+    const u2 = donationService.getUser('012345678901234567890123');
+    assert.isNull(u2);
+  });
 
-    const getResponse = request('GET', url);
-    const users = JSON.parse(getResponse.getBody('utf8'));
-    assert.isEmpty(users);
+  test('delete a user', function () {
+    const u = donationService.createUser(newUser);
+    assert(donationService.getUser(u._id) != null);
+    donationService.deleteOneUser(u._id);
+    assert(donationService.getUser(u._id) == null);
+  });
+
+  test('get all users', function () {
+    for (let u of users) {
+      donationService.createUser(u);
+    }
+
+    const allUsers = donationService.getUsers();
+    assert.equal(allUsers.length, users.length);
+  });
+
+  test('get users detail', function () {
+    for (let u of users) {
+      donationService.createUser(u);
+    }
+
+    const allUsers = donationService.getUsers();
+    for (let i = 0; i < users.length; i++) {
+      assert(_.some([allUsers[i]], users[i]),
+          'returnedUser must be a superset of newUser');
+    }
+  });
+
+  test('get all users empty', function () {
+    const allUsers = donationService.getUsers();
+    assert.equal(allUsers.length, 0);
   });
 
 });

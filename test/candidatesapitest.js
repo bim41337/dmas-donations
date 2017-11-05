@@ -1,67 +1,76 @@
 'use strict';
 
 const assert = require('chai').assert;
-var request = require('sync-request');
-
-const url = 'http://localhost:4000/api/candidates';
+const DonationService = require('./donation-service');
+const fixtures = require('./fixtures.json');
+const _ = require('lodash');
 
 suite('Candidate API tests', function () {
 
-  test('get candidates', function () {
-    var res = request('GET', url);
-    const candidates = JSON.parse(res.getBody('utf8'));
+  let candidates = fixtures.candidates;
+  let newCandidate = fixtures.newCandidate;
 
-    assert.equal(2, candidates.length);
+  const donationService = new DonationService('http://localhost:4000');
 
-    assert.equal(candidates[0].firstName, 'Lisa');
-    assert.equal(candidates[0].lastName, 'Simpson');
-    assert.equal(candidates[0].office, 'President');
-
-    assert.equal(candidates[1].firstName, 'Donald');
-    assert.equal(candidates[1].lastName, 'Simpson');
-    assert.equal(candidates[1].office, 'President');
-
+  beforeEach(function () {
+    donationService.deleteAllCandidates();
   });
 
-  test('get one candidate', function () {
-
-    var res = request('GET', url);
-    const candidates = JSON.parse(res.getBody('utf8'));
-
-    const oneCandidateUrl = url + '/' + candidates[0]._id;
-    res = request('GET', oneCandidateUrl);
-    const oneCandidate = JSON.parse(res.getBody('utf8'));
-
-    assert.equal(oneCandidate.firstName, 'Lisa');
-    assert.equal(oneCandidate.lastName, 'Simpson');
-    assert.equal(oneCandidate.office, 'President');
-
+  afterEach(function () {
+    donationService.deleteAllCandidates();
   });
 
   test('create a candidate', function () {
-
-    const newCandidate = {
-      firstName: 'Barnie',
-      lastName: 'Grumble',
-      office: 'President',
-    };
-
-    const res = request('POST', url, { json: newCandidate });
-    const returnedCandidate = JSON.parse(res.getBody('utf8'));
-
-    assert.equal(returnedCandidate.firstName, 'Barnie');
-    assert.equal(returnedCandidate.lastName, 'Grumble');
-    assert.equal(returnedCandidate.office, 'President');
-
+    const returnedCandidate = donationService.createCandidate(newCandidate);
+    assert(_.some([returnedCandidate], newCandidate),
+        'returnedCandidate must be a superset of newCandidate');
+    assert.isDefined(returnedCandidate._id);
   });
 
-  test('Delete all candidates', function () {
-    const response = request('DELETE', url);
-    assert.equal(response.statusCode, 204);
+  test('get candidate', function () {
+    const c1 = donationService.createCandidate(newCandidate);
+    const c2 = donationService.getCandidate(c1._id);
+    assert.deepEqual(c1, c2);
+  });
 
-    const getResponse = request('GET', url);
-    const candidates = JSON.parse(getResponse.getBody('utf8'));
-    assert.isEmpty(candidates);
+  test('get invalid candidate', function () {
+    const c1 = donationService.getCandidate('1234');
+    assert.isNull(c1);
+    const c2 = donationService.getCandidate('012345678901234567890123');
+    assert.isNull(c2);
+  });
+
+  test('delete a candidate', function () {
+    const c = donationService.createCandidate(newCandidate);
+    assert(donationService.getCandidate(c._id) != null);
+    donationService.deleteOneCandidate(c._id);
+    assert(donationService.getCandidate(c._id) == null);
+  });
+
+  test('get all candidates', function () {
+    for (let c of candidates) {
+      donationService.createCandidate(c);
+    }
+
+    const allCandidates = donationService.getCandidates();
+    assert.equal(allCandidates.length, candidates.length);
+  });
+
+  test('get candidates detail', function () {
+    for (let c of candidates) {
+      donationService.createCandidate(c);
+    }
+
+    const allCandidates = donationService.getCandidates();
+    for (var i = 0; i < candidates.length; i++) {
+      assert(_.some([allCandidates[i]], candidates[i]),
+          'returnedCandidate must be a superset of newCandidate');
+    }
+  });
+
+  test('get all candidates empty', function () {
+    const allCandidates = donationService.getCandidates();
+    assert.equal(allCandidates.length, 0);
   });
 
 });

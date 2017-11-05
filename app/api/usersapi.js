@@ -17,6 +17,24 @@ exports.find = {
 
 };
 
+exports.findOne = {
+
+  auth: false,
+
+  handler: function (request, reply) {
+    User.findOne({ _id: request.params.id }).then(user => {
+      if (user != null) {
+        reply(user);
+      }
+
+      reply(Boom.notFound('id not found'));
+    }).catch(err => {
+      reply(Boom.notFound('id not found'));
+    });
+  },
+
+};
+
 exports.create = {
 
   auth: false,
