@@ -1,6 +1,6 @@
 'use strict';
 
-const HEROKU_MODE = true;
+const HEROKU_MODE = false;
 const assert = require('chai').assert;
 const DonationService = require('./donation-service');
 const fixtures = require('./fixtures.json');

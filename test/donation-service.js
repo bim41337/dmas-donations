@@ -48,6 +48,26 @@ class DonationService {
     return this.httpService.delete('/api/users/' + id);
   }
 
+  makeDonation(id, donation) {
+    return this.httpService.post('/api/candidates/' + id + '/donations', donation);
+  }
+
+  getAllDonations() {
+    return this.httpService.get('/api/donations');
+  }
+
+  getDonations(id) {
+    return this.httpService.get('/api/candidates/' + id + '/donations');
+  }
+
+  deleteAllDonations() {
+    return this.httpService.delete('/api/donations');
+  }
+
+  deleteCandidateAllDonations(id) {
+    return this.httpService.delete('/api/candidates/' + id + '/donations');
+  }
+
 }
 
 module.exports = DonationService;

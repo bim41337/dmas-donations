@@ -33,10 +33,29 @@
       "office": "President"
     }
   ],
+  "donations": [
+    {
+      "amount": 40,
+      "method": "paypal"
+    },
+    {
+      "amount": 90,
+      "method": "direct"
+    },
+    {
+      "amount": 430,
+      "method": "paypal"
+    }
+  ],
   "newCandidate": {
     "firstName": "Barnie",
     "lastName": "Grumble",
     "office": "President"
+  },
+  "newFallbackCandidate": {
+    "firstName": "James A.",
+    "lastName": "Hardfield",
+    "office": "Lord of Doom"
   },
   "newUser": {
     "firstName": "Maggie",
