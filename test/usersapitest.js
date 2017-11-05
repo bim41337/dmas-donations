@@ -1,5 +1,6 @@
 'use strict';
 
+const HEROKU_MODE = true;
 const assert = require('chai').assert;
 const DonationService = require('./donation-service');
 const fixtures = require('./fixtures.json');
@@ -10,7 +11,8 @@ suite('User API tests', function () {
   let users = fixtures.users;
   let newUser = fixtures.newUser;
 
-  const donationService = new DonationService('http://localhost:4000');
+  const donationService = new DonationService(HEROKU_MODE ? fixtures.donationServiceHerokuUrl :
+      DonationService.localhostBaseUrl);
 
   beforeEach(function () {
     donationService.deleteAllUsers();

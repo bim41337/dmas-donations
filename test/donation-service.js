@@ -55,4 +55,5 @@ class DonationService {
 
 }
 
-module.exports = DonationService;
+exports.service = DonationService;
+exports.localhostBaseUrl = localhostBaseUrl;
