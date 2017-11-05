@@ -11,8 +11,9 @@ suite('User API tests', function () {
   let users = fixtures.users;
   let newUser = fixtures.newUser;
 
-  const donationService = new DonationService(HEROKU_MODE ? fixtures.donationServiceHerokuUrl :
-      DonationService.localhostBaseUrl);
+  const baseUrl = HEROKU_MODE ? fixtures.donationServiceHerokuUrl
+      : fixtures.donationServiceLocalhostUrl;
+  const donationService = new DonationService(baseUrl);
 
   beforeEach(function () {
     donationService.deleteAllUsers();

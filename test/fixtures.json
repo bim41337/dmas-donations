@@ -1,5 +1,5 @@
 {
-  "donationServiceHerokuUrl": "https://fast-chamber-85865.herokuapp.com/",
+  "donationServiceHerokuUrl": "https://fast-chamber-85865.herokuapp.com",
   "donationServiceLocalhostUrl": "http://localhost:4000",
   "users": [
     {
