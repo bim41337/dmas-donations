@@ -11,8 +11,9 @@ suite('Candidate API tests', function () {
   let candidates = fixtures.candidates;
   let newCandidate = fixtures.newCandidate;
 
-  const donationService = new DonationService(HEROKU_MODE ? fixtures.donationServiceHerokuUrl :
-      DonationService.localhostBaseUrl);
+  const baseUrl = HEROKU_MODE ? fixtures.donationServiceHerokuUrl
+      : DonationService.localhostBaseUrl;
+  const donationService = new DonationService(baseUrl);
 
   beforeEach(function () {
     donationService.deleteAllCandidates();
