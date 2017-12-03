@@ -5,7 +5,9 @@ const Boom = require('boom');
 
 exports.find = {
 
-  auth: false,
+  auth: {
+    strategy: 'jwt',
+  },
 
   handler: function (request, reply) {
     Candidate.find({}).then(candidates => {
@@ -19,7 +21,9 @@ exports.find = {
 
 exports.findOne = {
 
-  auth: false,
+  auth: {
+    strategy: 'jwt',
+  },
 
   handler: function (request, reply) {
     Candidate.findOne({ _id: request.params.id }).then(candidate => {
@@ -37,7 +41,9 @@ exports.findOne = {
 
 exports.create = {
 
-  auth: false,
+  auth: {
+    strategy: 'jwt',
+  },
 
   handler: function (request, reply) {
     const candidate = new Candidate(request.payload);
@@ -52,7 +58,9 @@ exports.create = {
 
 exports.deleteAll = {
 
-  auth: false,
+  auth: {
+    strategy: 'jwt',
+  },
 
   handler: function (request, reply) {
     Candidate.remove({}).then(err => {
@@ -66,7 +74,9 @@ exports.deleteAll = {
 
 exports.deleteOne = {
 
-  auth: false,
+  auth: {
+    strategy: 'jwt',
+  },
 
   handler: function (request, reply) {
     Candidate.remove({ _id: request.params.id }).then(candidate => {

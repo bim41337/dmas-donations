@@ -8,6 +8,7 @@ const _ = require('lodash');
 
 suite('Donation API tests', function () {
 
+  let users = fixtures.users;
   let donations = fixtures.donations;
   let newCandidate = fixtures.newCandidate;
 
@@ -16,6 +17,7 @@ suite('Donation API tests', function () {
   const donationService = new DonationService(baseUrl);
 
   beforeEach(function () {
+    donationService.login(users[0]);
     donationService.deleteAllCandidates();
     donationService.deleteAllDonations();
   });
@@ -23,6 +25,7 @@ suite('Donation API tests', function () {
   afterEach(function () {
     donationService.deleteAllCandidates();
     donationService.deleteAllDonations();
+    donationService.logout();
   });
 
   test('create a donation', function () {
@@ -30,8 +33,8 @@ suite('Donation API tests', function () {
     donationService.makeDonation(returnedCandidate._id, donations[0]);
     const returnedDonations = donationService.getDonations(returnedCandidate._id);
     assert.equal(returnedDonations.length, 1);
-    assert(_.some([returnedDonations[0]], donations[0]),
-        'returned donation must be a superset of donation');
+    assert.isNotEmpty(returnedDonations[0].donor);
+    assert(_.some([returnedDonations[0]], donations[0]), 'returned donation must be a superset of donation');
   });
 
   test('create multiple donations', function () {
@@ -61,25 +64,15 @@ suite('Donation API tests', function () {
     assert.equal(d2.length, 0);
   });
 
-  test('delete all donations for single candidate', function () {
+  test('delete donations', function () {
     const returnedCandidate = donationService.createCandidate(newCandidate);
-    const fallbackCandidate = donationService.createCandidate(fixtures.newFallbackCandidate);
-    for (let i = 0; i < donations.length; i++) {
+    for (var i = 0; i < donations.length; i++) {
       donationService.makeDonation(returnedCandidate._id, donations[i]);
-      donationService.makeDonation(fallbackCandidate._id, donations[i]);
     }
 
-    const d1c = donationService.getDonations(returnedCandidate._id);
-    const d1f = donationService.getDonations(fallbackCandidate._id);
-    assert.equal(d1c.length, donations.length);
-    assert.equal(d1f.length, donations.length);
-    donationService.deleteCandidateAllDonations(returnedCandidate._id);
-    const d2c = donationService.getDonations(returnedCandidate._id);
-    const d2f = donationService.getDonations(fallbackCandidate._id);
-    const d2a = donationService.getAllDonations();
-    assert.equal(d2c.length, 0);
-    assert.equal(d2f.length, donations.length);
-    assert.notEqual(d2a.length, 0);
+    donationService.deleteDonations(returnedCandidate._id);
+    const d = donationService.getDonations(returnedCandidate._id);
+    assert.equal(d.length, 0);
   });
 
 });

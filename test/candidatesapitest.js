@@ -8,6 +8,7 @@ const _ = require('lodash');
 
 suite('Candidate API tests', function () {
 
+  let users = fixtures.users;
   let candidates = fixtures.candidates;
   let newCandidate = fixtures.newCandidate;
 
@@ -16,11 +17,13 @@ suite('Candidate API tests', function () {
   const donationService = new DonationService(baseUrl);
 
   beforeEach(function () {
+    donationService.login(users[0]);
     donationService.deleteAllCandidates();
   });
 
   afterEach(function () {
     donationService.deleteAllCandidates();
+    donationService.logout();
   });
 
   test('create a candidate', function () {

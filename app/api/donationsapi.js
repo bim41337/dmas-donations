@@ -1,11 +1,15 @@
 'use strict';
 
 const Donation = require('../models/donation');
+const Candidate = require('../models/candidate');
+const utils = require('../api/utils');
 const Boom = require('boom');
 
 exports.findAllDonations = {
 
-  auth: false,
+  auth: {
+    strategy: 'jwt',
+  },
 
   handler: function (request, reply) {
     Donation.find({}).populate('donor').populate('candidate').then(donations => {
@@ -19,7 +23,9 @@ exports.findAllDonations = {
 
 exports.findDonations = {
 
-  auth: false,
+  auth: {
+    strategy: 'jwt',
+  },
 
   handler: function (request, reply) {
     Donation.find({ candidate: request.params.id }).then(donations => {
@@ -33,13 +39,19 @@ exports.findDonations = {
 
 exports.makeDonation = {
 
-  auth: false,
+  auth: {
+    strategy: 'jwt',
+  },
 
   handler: function (request, reply) {
     const donation = new Donation(request.payload);
     donation.candidate = request.params.id;
+    donation.donor = utils.getUserIdFromRequest(request);
+
     donation.save().then(newDonation => {
-      reply(newDonation).code(201);
+      return Donation.findById(newDonation._id).populate('candidate').populate('donor');
+    }).then(donation => {
+      reply(donation).code(201);
     }).catch(err => {
       reply(Boom.badImplementation('error making donation'));
     });
@@ -49,7 +61,9 @@ exports.makeDonation = {
 
 exports.deleteAllDonations = {
 
-  auth: false,
+  auth: {
+    strategy: 'jwt',
+  },
 
   handler: function (request, reply) {
     Donation.remove({}).then(err => {
@@ -61,17 +75,17 @@ exports.deleteAllDonations = {
 
 };
 
-exports.deleteCandidateAllDonations = {
+exports.deleteDonations = {
 
-  auth: false,
-
-  handler: function (request, reply) {
-    let candidateId = request.params.id;
-    Donation.remove({ candidate: candidateId }).then(err => {
-      reply({ message: 'Removed all donations for candidate ' + candidateId }).code(204);
-    }).catch(err => {
-      reply(Boom.badImplementation('error removing Donations for a candidate'));
-    });
+  auth: {
+    strategy: 'jwt',
   },
 
+  handler: function (request, reply) {
+    Donation.remove({ candidate: request.params.id }).then(result => {
+      reply().code(204);
+    }).catch(err => {
+      reply(Boom.badImplementation('error removing Donations'));
+    });
+  },
 };

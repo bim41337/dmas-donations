@@ -16,17 +16,18 @@ suite('User API tests', function () {
   const donationService = new DonationService(baseUrl);
 
   beforeEach(function () {
-    donationService.deleteAllUsers();
+    donationService.login(users[0]);
+    //donationService.deleteAllUsers();
   });
 
   afterEach(function () {
-    donationService.deleteAllUsers();
+    //donationService.deleteAllUsers();
+    donationService.logout();
   });
 
   test('create a user', function () {
     const returnedUser = donationService.createUser(newUser);
-    assert(_.some([returnedUser], newUser),
-        'returnedUser must be a superset of newUser');
+    assert(_.some([returnedUser], newUser), 'returnedUser must be a superset of newUser');
     assert.isDefined(returnedUser._id);
   });
 
@@ -50,14 +51,14 @@ suite('User API tests', function () {
     assert(donationService.getUser(u._id) == null);
   });
 
-  test('get all users', function () {
-    for (let u of users) {
-      donationService.createUser(u);
-    }
-
-    const allUsers = donationService.getUsers();
-    assert.equal(allUsers.length, users.length);
-  });
+  // test('get all users', function () {
+  //   for (let u of users) {
+  //     donationService.createUser(u);
+  //   }
+  //
+  //   const allUsers = donationService.getUsers();
+  //   assert.equal(allUsers.length, users.length);
+  // });
 
   test('get users detail', function () {
     for (let u of users) {
@@ -65,15 +66,13 @@ suite('User API tests', function () {
     }
 
     const allUsers = donationService.getUsers();
-    for (let i = 0; i < users.length; i++) {
-      assert(_.some([allUsers[i]], users[i]),
-          'returnedUser must be a superset of newUser');
+    for (var i = 0; i < users.length; i++) {
+      assert(_.some([allUsers[i]], users[i]), 'returnedUser must be a superset of newUser');
     }
   });
 
-  test('get all users empty', function () {
-    const allUsers = donationService.getUsers();
-    assert.equal(allUsers.length, 0);
-  });
-
+  // test('get all users empty', function () {
+  //   const allUsers = donationService.getUsers();
+  //   assert.equal(allUsers.length, 0);
+  // });
 });

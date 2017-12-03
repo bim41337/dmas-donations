@@ -28,6 +28,14 @@ class DonationService {
     return this.httpService.delete('/api/candidates/' + id);
   }
 
+  login(user) {
+    return this.httpService.setAuth('/api/users/authenticate', user);
+  }
+
+  logout() {
+    this.httpService.clearAuth();
+  }
+
   getUsers() {
     return this.httpService.get('/api/users');
   }
@@ -64,7 +72,7 @@ class DonationService {
     return this.httpService.delete('/api/donations');
   }
 
-  deleteCandidateAllDonations(id) {
+  deleteDonations(id) {
     return this.httpService.delete('/api/candidates/' + id + '/donations');
   }
 
